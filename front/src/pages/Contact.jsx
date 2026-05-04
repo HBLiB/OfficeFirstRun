@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
+import Toast from '../components/Toast';
 
 function Contact() {
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '' });
   const [status, setStatus] = useState(null);
   const [errors, setErrors] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => { document.title = 'Contact — H-Network'; }, []);
 
@@ -34,17 +36,21 @@ function Contact() {
       if (res.status === 201) {
         setStatus('success');
         setForm({ name: '', email: '', company: '', message: '' });
+        setToast({ message: 'Message sent successfully!', type: 'success' });
       } else if (res.status === 422) {
         const body = await res.json();
         setErrors(body.detail || []);
         setStatus('error');
+        setToast({ message: 'Please fix the errors and try again.', type: 'error' });
       } else {
         setStatus('error');
         setErrors([{ field: '', message: 'Unexpected error. Please try again.' }]);
+        setToast({ message: 'Something went wrong.', type: 'error' });
       }
     } catch {
       setStatus('error');
       setErrors([{ field: '', message: 'Could not reach the server. Please try again later.' }]);
+      setToast({ message: 'Could not reach the server.', type: 'error' });
     } finally {
       setSubmitting(false);
     }
@@ -78,6 +84,13 @@ function Contact() {
           {submitting ? 'Sending…' : 'Send Message'}
         </button>
       </form>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </section>
   );
 }
