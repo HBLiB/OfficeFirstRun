@@ -1,4 +1,8 @@
+import { useEffect } from 'react';
+
 function About() {
+  useEffect(() => { document.title = 'About — H-Network'; }, []);
+
   return (
     <section className="about">
       <h1>About</h1>

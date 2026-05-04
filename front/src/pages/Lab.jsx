@@ -17,6 +17,8 @@ function Lab() {
   const [error, setError] = useState(false);
   const [selected, setSelected] = useState(null);
 
+  useEffect(() => { document.title = 'Lab — H-Network'; }, []);
+
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/topology`)
       .then((res) => {

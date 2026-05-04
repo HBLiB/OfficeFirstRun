@@ -15,6 +15,8 @@ function Services() {
   const [error, setError] = useState(false);
   const [cases, setCases] = useState([]);
 
+  useEffect(() => { document.title = 'Services — H-Network'; }, []);
+
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/services`)
       .then((res) => {
