@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
 
 function Contact() {
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '' });
-  const [status, setStatus] = useState(null); // 'success' | 'error'
+  const [status, setStatus] = useState(null);
   const [errors, setErrors] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => { document.title = 'Contact — H-Network'; }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

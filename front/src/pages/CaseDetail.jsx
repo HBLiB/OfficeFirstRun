@@ -11,6 +11,10 @@ function CaseDetail() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    document.title = study ? `${study.title} — H-Network` : 'Loading… — H-Network';
+  }, [study]);
+
+  useEffect(() => {
     fetch(`${API_BASE_URL}/api/case-studies/${id}`)
       .then((res) => {
         if (res.status === 404) { setNotFound(true); return null; }

@@ -1,7 +1,10 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProjectsStrip from '../components/ProjectsStrip';
 
 function Home() {
+  useEffect(() => { document.title = 'H-Network — Freelance Network & Security Specialist'; }, []);
+
   return (
     <>
       <section className="hero">
