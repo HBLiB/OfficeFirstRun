@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 import os
 import logging
 import time
+import uuid
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("api")
@@ -270,11 +271,21 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def log_requests(request, call_next):
+async def request_id_and_logging(request: Request, call_next):
+    request_id = str(uuid.uuid4())
+    request.state.request_id = request_id
     start = time.perf_counter()
     response = await call_next(request)
-    ms = int((time.perf_counter() - start) * 1000)
-    logger.info("%s %s %s %dms", request.method, request.url.path, response.status_code, ms)
+    ms = round((time.perf_counter() - start) * 1000, 1)
+    response.headers["X-Request-ID"] = request_id
+    logger.info(
+        "%s %s %s %.0fms request_id=%s",
+        request.method,
+        request.url.path,
+        response.status_code,
+        ms,
+        request_id,
+    )
     return response
 
 
