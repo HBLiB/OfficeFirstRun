@@ -321,3 +321,17 @@ def get_health():
         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "version": "0.1.0",
     }
+
+
+@app.get("/api/stats")
+def get_stats():
+    total_services = sum(len(cat["services"]) for cat in SERVICES["categories"])
+    with Session(engine) as session:
+        from sqlalchemy import func
+        count = session.query(func.count(ContactSubmission.id)).scalar()
+    return {
+        "total_services": total_services,
+        "total_case_studies": len(CASE_STUDIES_LIST),
+        "total_projects": len(PROJECTS["projects"]),
+        "total_contact_submissions": count,
+    }
