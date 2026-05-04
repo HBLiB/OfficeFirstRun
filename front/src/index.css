@@ -278,3 +278,29 @@ main { flex: 1; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; width: 1
   from { opacity: 1; transform: translateY(0); }
   to   { opacity: 0; transform: translateY(1rem); }
 }
+
+/* Scroll to Top Button */
+.scroll-to-top {
+  position: fixed;
+  bottom: 5rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(30, 30, 30, 0.75);
+  color: #e6edf3;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 999;
+}
+.scroll-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.scroll-to-top:hover {
+  background: rgba(50, 50, 50, 0.9);
+}
