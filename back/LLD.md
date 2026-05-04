@@ -56,6 +56,9 @@ Detail endpoint includes `tech_tags`, `quote`, and `year` fields.
 - `company`: optional string
 - `message`: required, 1-2000 chars (stripped)
 
+## Request Logging Middleware
+HTTP middleware logs every request at INFO level: `GET /api/services 200 12ms`.
+
 ## CORS
 Allows origin `http://localhost:5173`.
 
