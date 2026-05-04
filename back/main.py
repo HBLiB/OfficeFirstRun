@@ -12,6 +12,10 @@ import uuid
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("api")
 
+SERVICE_NAME = "freelancer-poc-api"
+SERVICE_VERSION = "0.1.0"
+SERVICE_PORT = 8000
+
 # Rate limiting
 from collections import defaultdict
 _contact_rate: dict[str, list[float]] = defaultdict(list)
@@ -268,6 +272,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def startup_banner():
+    logger.info(
+        "service=%s version=%s port=%d",
+        SERVICE_NAME,
+        SERVICE_VERSION,
+        SERVICE_PORT,
+    )
+
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "ok",
+        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+    }
 
 
 @app.middleware("http")
