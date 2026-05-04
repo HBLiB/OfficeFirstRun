@@ -1,3 +1,4 @@
+import LoadingSpinner from '../components/LoadingSpinner';
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../config';
 import { mockTopologyData } from '../data/mockTopology';
@@ -29,7 +30,7 @@ function Lab() {
       });
   }, []);
 
-  if (!data) return <p className="loading">Loading topology…</p>;
+  if (!data) return <LoadingSpinner text="Loading topology…" />;
 
   const nodeMap = {};
   data.nodes.forEach((n) => { nodeMap[n.id] = n; });
