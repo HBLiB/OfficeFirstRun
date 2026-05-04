@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 import { mockServicesData } from '../data/mockServices';
+import { mockCaseStudiesData } from '../data/mockCaseStudies';
 
 const ICON_MAP = {
   network: '🌐',
@@ -10,6 +12,7 @@ const ICON_MAP = {
 function Services() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
+  const [cases, setCases] = useState([]);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/services`)
@@ -22,6 +25,14 @@ function Services() {
         setError(true);
         setData(mockServicesData);
       });
+
+    fetch(`${API_BASE_URL}/api/case-studies`)
+      .then((res) => {
+        if (!res.ok) throw new Error('API error');
+        return res.json();
+      })
+      .then((d) => setCases(d.case_studies || []))
+      .catch(() => setCases(mockCaseStudiesData));
   }, []);
 
   if (!data) return <p className="loading">Loading services…</p>;
@@ -29,7 +40,7 @@ function Services() {
   return (
     <section className="services">
       <h1>Services</h1>
-      {error && <p className="notice">Using demo data — API unavailable.</p>}
+      {error && <p className="notice notice-dark">Using demo data — API unavailable.</p>}
       {data.categories.map((cat) => (
         <div key={cat.name} className="service-category">
           <h2>{cat.name}</h2>
@@ -44,6 +55,20 @@ function Services() {
           </div>
         </div>
       ))}
+      {cases.length > 0 && (
+        <div className="case-studies-list">
+          <h2>Case Studies</h2>
+          <div className="service-grid">
+            {cases.map((cs) => (
+              <Link to={`/cases/${cs.id}`} key={cs.id} className="service-card case-card-link">
+                <span className="badge badge-category">{cs.category}</span>
+                <h3>{cs.title}</h3>
+                <p>{cs.challenge}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
