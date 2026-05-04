@@ -6,10 +6,12 @@ import Contact from './pages/Contact';
 import Lab from './pages/Lab';
 import CaseDetail from './pages/CaseDetail';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <div className="app dark">
+      <ScrollToTop />
       <nav className="navbar">
         <span className="logo">NetConsult</span>
         <div className="nav-links">
