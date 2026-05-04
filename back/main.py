@@ -1,16 +1,14 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import DeclarativeBase, Session
 from datetime import datetime, timezone
+import os
 
 # ---------------------------------------------------------------------------
 # Database
 # ---------------------------------------------------------------------------
-import os
-
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.db")
 engine = create_engine(f"sqlite:///{DB_PATH}", echo=False)
 
@@ -57,39 +55,165 @@ SERVICES = {
     ]
 }
 
-CASE_STUDIES = {
-    "case_studies": [
+CASE_STUDIES_LIST = [
+    {
+        "id": 1,
+        "title": "Worldstream EVPN/VXLAN Fabric",
+        "category": "Datacenter Networking",
+        "challenge": "Legacy spanning-tree topology limiting scale across multiple datacenter halls.",
+        "solution": "Designed and deployed a multi-pod EVPN/VXLAN spine-leaf fabric with automated provisioning.",
+        "result": "Zero unplanned downtime post-migration, 3x port density increase.",
+        "tech_tags": ["EVPN", "VXLAN", "Spine-Leaf", "Ansible", "Arista"],
+        "quote": "All built by hand, before AI was an option.",
+        "year": "2021",
+    },
+    {
+        "id": 2,
+        "title": "NEP Broadcast Streaming Telemetry",
+        "category": "ISP Networking",
+        "challenge": "No real-time visibility into broadcast-grade network performance across distributed PoPs.",
+        "solution": "Deployed model-driven streaming telemetry with gNMI collectors, Prometheus, and Grafana dashboards.",
+        "result": "Sub-second anomaly detection, 60% faster MTTR on transport issues.",
+        "tech_tags": ["gNMI", "Streaming Telemetry", "Prometheus", "Grafana", "MPLS"],
+        "quote": "All built by hand, before AI was an option.",
+        "year": "2022",
+    },
+    {
+        "id": 3,
+        "title": "EBPI ACI + OpenStack Integration",
+        "category": "Datacenter Networking",
+        "challenge": "Siloed network and compute teams, manual VLAN provisioning for OpenStack tenants.",
+        "solution": "Integrated Cisco ACI with OpenStack Neutron via ML2 plugin, automated tenant network lifecycle.",
+        "result": "Tenant provisioning reduced from days to minutes, consistent policy enforcement.",
+        "tech_tags": ["ACI", "OpenStack", "Neutron", "Python", "Cisco"],
+        "quote": None,
+        "year": "2020",
+    },
+    {
+        "id": 4,
+        "title": "Flow Analytics Platform",
+        "category": "ISP Networking",
+        "challenge": "Unbalanced egress traffic and no granular visibility into traffic patterns across transit providers.",
+        "solution": "Built a NetFlow/sFlow analytics platform with BGP-aware traffic classification and cost modeling.",
+        "result": "Even traffic distribution, 25% cost saving on 95th-percentile billing.",
+        "tech_tags": ["NetFlow", "sFlow", "BGP", "Python", "Elasticsearch"],
+        "quote": "All built by hand, before AI was an option.",
+        "year": "2019",
+    },
+]
+
+CASE_STUDIES = {"case_studies": [{k: v for k, v in cs.items() if k in ("id", "title", "category", "challenge", "solution", "result")} for cs in CASE_STUDIES_LIST]}
+CASE_STUDIES_BY_ID = {cs["id"]: cs for cs in CASE_STUDIES_LIST}
+
+TOPOLOGY = {
+    "nodes": [
+        {
+            "id": "h-fw",
+            "label": "h-fw (FortiGate)",
+            "type": "firewall",
+            "asn": 65000,
+            "x": 400,
+            "y": 50,
+            "description": "Central hub firewall, BGP route reflector",
+        },
+        {
+            "id": "h-srv",
+            "label": "h-srv",
+            "type": "server",
+            "asn": 65010,
+            "x": 200,
+            "y": 250,
+            "services": ["HAProxy", "Grafana", "NetBox", "Gitea", "h-cli"],
+            "description": "Infrastructure services hub",
+        },
+        {
+            "id": "h-oracle",
+            "label": "h-oracle",
+            "type": "server",
+            "asn": 65100,
+            "x": 400,
+            "y": 250,
+            "services": ["h-knowledge", "vLLM", "Ollama"],
+            "description": "Dual RTX 5090, local LLM inference",
+        },
+        {
+            "id": "h-titan",
+            "label": "h-titan",
+            "type": "server",
+            "asn": 65101,
+            "x": 600,
+            "y": 250,
+            "services": ["EVE-NG Pro"],
+            "description": "RTX 3090/4070Ti, unlimited lab topologies (CLOS/EVPN/MPLS)",
+        },
+    ],
+    "links": [
+        {
+            "source": "h-fw",
+            "target": "h-srv",
+            "protocol": "eBGP",
+            "label": "AS65000 ↔ AS65010",
+            "prefixes": 12,
+        },
+        {
+            "source": "h-fw",
+            "target": "h-oracle",
+            "protocol": "eBGP",
+            "label": "AS65000 ↔ AS65100",
+            "prefixes": 8,
+        },
+        {
+            "source": "h-fw",
+            "target": "h-titan",
+            "protocol": "eBGP",
+            "label": "AS65000 ↔ AS65101",
+            "prefixes": 30,
+        },
+    ],
+    "metadata": {
+        "title": "Homelab Network — Hub-Spoke BGP",
+        "total_routes": 50,
+        "description": "Production-grade homelab: hub-spoke BGP, full telemetry, EVE-NG lab integration",
+    },
+}
+
+PROJECTS = {
+    "projects": [
         {
             "id": 1,
-            "title": "Regional ISP Peering Optimization",
-            "category": "ISP Networking",
-            "challenge": "High transit costs, single upstream dependency.",
-            "solution": "Established IXP presence at 3 exchanges, deployed route-server peering.",
-            "result": "40% transit cost reduction, improved latency.",
+            "name": "h-cli",
+            "tagline": "AI-powered infrastructure management",
+            "description": "9 Docker services, 44 hardening items, unified CLI for network operations.",
+            "tech": ["Python", "Docker", "Redis", "FastAPI"],
+            "status": "active",
+            "url": None,
         },
         {
             "id": 2,
-            "title": "Datacenter Fabric Migration",
-            "category": "Datacenter Networking",
-            "challenge": "Legacy spanning-tree topology causing outages and limiting scale.",
-            "solution": "Designed and migrated to an EVPN/VXLAN spine-leaf fabric with automated deployment.",
-            "result": "Zero unplanned downtime post-migration, 3x port density increase.",
+            "name": "h-ssh",
+            "tagline": "Multi-vendor network automation",
+            "description": "Parallel SSH/NETCONF/eAPI execution with commit-confirmed rollback.",
+            "tech": ["Python", "Paramiko", "NETCONF", "eAPI"],
+            "status": "active",
+            "url": None,
         },
         {
             "id": 3,
-            "title": "Multi-homed Transit Optimization",
-            "category": "ISP Networking",
-            "challenge": "Unbalanced egress traffic across three transit providers.",
-            "solution": "Implemented BGP community-based traffic engineering and selective prepending.",
-            "result": "Even traffic distribution, 25% cost saving on 95th-percentile billing.",
+            "name": "h-knowledge",
+            "tagline": "LLM-optimized vendor knowledge base",
+            "description": "50k+ verified vectors, 7-stage Redis pipeline for vendor documentation RAG.",
+            "tech": ["Python", "Redis", "Qdrant", "vLLM"],
+            "status": "active",
+            "url": None,
         },
         {
             "id": 4,
-            "title": "DCI for Disaster Recovery",
-            "category": "Datacenter Networking",
-            "challenge": "No active-active capability between two geographically separated datacenters.",
-            "solution": "Deployed DCI overlay with EVPN multi-homing and stretched VNIs.",
-            "result": "RPO near-zero, seamless workload mobility during maintenance windows.",
+            "name": "Batfish+MPLS",
+            "tagline": "Network verification with MPLS support",
+            "description": "Batfish fork adding MPLS/LDP/RSVP analysis for offline network verification.",
+            "tech": ["Java", "Batfish", "MPLS"],
+            "status": "in-development",
+            "url": None,
         },
     ]
 }
@@ -142,6 +266,24 @@ def get_services():
 @app.get("/api/case-studies")
 def get_case_studies():
     return CASE_STUDIES
+
+
+@app.get("/api/case-studies/{case_id}")
+def get_case_study(case_id: int):
+    cs = CASE_STUDIES_BY_ID.get(case_id)
+    if not cs:
+        raise HTTPException(status_code=404, detail="Case study not found")
+    return cs
+
+
+@app.get("/api/topology")
+def get_topology():
+    return TOPOLOGY
+
+
+@app.get("/api/projects")
+def get_projects():
+    return PROJECTS
 
 
 @app.post("/api/contact", status_code=status.HTTP_201_CREATED)
