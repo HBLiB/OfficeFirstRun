@@ -1,3 +1,4 @@
+import LoadingSpinner from '../components/LoadingSpinner';
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
@@ -35,7 +36,7 @@ function CaseDetail() {
     );
   }
 
-  if (!study) return <p className="loading">Loading case study…</p>;
+  if (!study) return <LoadingSpinner text="Loading case study…" />;
 
   return (
     <section className="case-detail">
