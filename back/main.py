@@ -5,6 +5,11 @@ from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import DeclarativeBase, Session
 from datetime import datetime, timezone
 import os
+import logging
+import time
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("api")
 
 # ---------------------------------------------------------------------------
 # Database
@@ -256,6 +261,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def log_requests(request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)
+    ms = int((time.perf_counter() - start) * 1000)
+    logger.info("%s %s %s %dms", request.method, request.url.path, response.status_code, ms)
+    return response
 
 
 @app.get("/api/services")
