@@ -298,3 +298,12 @@ def post_contact(body: ContactRequest):
         session.add(submission)
         session.commit()
     return {"status": "ok", "message": "Thank you, we'll be in touch."}
+
+
+@app.get("/api/health")
+def get_health():
+    return {
+        "status": "ok",
+        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "version": "0.1.0",
+    }

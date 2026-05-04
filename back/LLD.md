@@ -30,6 +30,7 @@ Services, case studies, topology, and projects are seeded as in-memory constants
 | GET    | /api/topology           | 200      | Hub-spoke BGP topology (nodes + links) |
 | GET    | /api/projects           | 200      | Featured tools/products                |
 | POST   | /api/contact            | 201/422  | Submit contact form to SQLite          |
+| GET    | /api/health             | 200      | Health check with timestamp and version |
 
 ## Seed Data
 
