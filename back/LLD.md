@@ -57,6 +57,9 @@ Detail endpoint includes `tech_tags`, `quote`, and `year` fields.
 - `company`: optional string
 - `message`: required, 1-2000 chars (stripped)
 
+## Rate Limiting (POST /api/contact)
+In-memory rate limit: 5 submissions per IP per 10-minute window. Returns 429 if exceeded. Uses stdlib only (dict of timestamps).
+
 ## Request Logging Middleware
 HTTP middleware logs every request at INFO level: `GET /api/services 200 12ms`.
 

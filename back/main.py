@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime
@@ -10,6 +10,12 @@ import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("api")
+
+# Rate limiting
+from collections import defaultdict
+_contact_rate: dict[str, list[float]] = defaultdict(list)
+_RATE_LIMIT = 5
+_RATE_WINDOW = 600  # 10 minutes
 
 # ---------------------------------------------------------------------------
 # Database
@@ -301,7 +307,13 @@ def get_projects():
 
 
 @app.post("/api/contact", status_code=status.HTTP_201_CREATED)
-def post_contact(body: ContactRequest):
+def post_contact(body: ContactRequest, request: Request):
+    ip = request.client.host if request.client else "unknown"
+    now = time.time()
+    _contact_rate[ip] = [t for t in _contact_rate[ip] if now - t < _RATE_WINDOW]
+    if len(_contact_rate[ip]) >= _RATE_LIMIT:
+        raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
+    _contact_rate[ip].append(now)
     with Session(engine) as session:
         submission = ContactSubmission(
             name=body.name,
