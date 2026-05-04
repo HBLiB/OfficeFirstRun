@@ -266,9 +266,15 @@ class ContactRequest(BaseModel):
 # ---------------------------------------------------------------------------
 app = FastAPI(title="Freelancer POC API")
 
+_allowed_origins = [
+    o.strip()
+    for o in os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+    if o.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=_allowed_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -300,6 +306,9 @@ async def request_id_and_logging(request: Request, call_next):
     response = await call_next(request)
     ms = round((time.perf_counter() - start) * 1000, 1)
     response.headers["X-Request-ID"] = request_id
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     logger.info(
         "%s %s %s %.0fms request_id=%s",
         request.method,
