@@ -5,6 +5,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Lab from './pages/Lab';
 import CaseDetail from './pages/CaseDetail';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -30,9 +31,7 @@ function App() {
           <Route path="/cases/:id" element={<CaseDetail />} />
         </Routes>
       </main>
-      <footer className="footer">
-        <p>&copy; 2026 NetConsult — ISP &amp; Datacenter Networking</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

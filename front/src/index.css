@@ -191,3 +191,23 @@ main { flex: 1; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; width: 1
 }
 .back-link { color: #58a6ff; text-decoration: none; display: inline-block; margin-bottom: 1rem; }
 .back-link:hover { text-decoration: underline; }
+
+/* Site Footer (component) */
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem;
+  background: #161b22;
+  border-top: 1px solid #30363d;
+  font-size: .85rem;
+  color: #8b949e;
+}
+.footer-copy { font-weight: 500; }
+.footer-links { display: flex; gap: 1.25rem; }
+.footer-links a {
+  color: #8b949e;
+  text-decoration: none;
+  transition: color .2s;
+}
+.footer-links a:hover { color: #fff; }
