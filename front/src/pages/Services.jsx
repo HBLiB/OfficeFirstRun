@@ -1,3 +1,4 @@
+import LoadingSpinner from '../components/LoadingSpinner';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
@@ -35,7 +36,7 @@ function Services() {
       .catch(() => setCases(mockCaseStudiesData));
   }, []);
 
-  if (!data) return <p className="loading">Loading services…</p>;
+  if (!data) return <LoadingSpinner text="Loading services…" />;
 
   return (
     <section className="services">
